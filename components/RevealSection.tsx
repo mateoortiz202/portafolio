@@ -10,12 +10,15 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
+import type { CosmicObjectVariant } from "@/lib/cosmicObjects";
 
 interface RevealSectionProps {
   children: ReactNode;
+  reverse?: boolean;
+  cosmic: CosmicObjectVariant;
 }
 
-export default function RevealSection({ children }: RevealSectionProps) {
+export default function RevealSection({ children, reverse = false, cosmic }: RevealSectionProps) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -40,14 +43,20 @@ export default function RevealSection({ children }: RevealSectionProps) {
   }, []);
 
   return (
-    <section ref={ref} className="sec flat">
-      {Children.map(children, (child, i) =>
-        isValidElement(child)
-          ? cloneElement(child as ReactElement<{ style?: CSSProperties }>, {
-              style: { "--i": i } as CSSProperties,
-            })
-          : child,
-      )}
+    <section
+      ref={ref}
+      className={`sec sec-split${reverse ? " reverse" : ""}`}
+      data-cosmic={cosmic}
+    >
+      <div className="sec-content">
+        {Children.map(children, (child, i) =>
+          isValidElement(child)
+            ? cloneElement(child as ReactElement<{ style?: CSSProperties }>, {
+                style: { "--i": i } as CSSProperties,
+              })
+            : child,
+        )}
+      </div>
     </section>
   );
 }

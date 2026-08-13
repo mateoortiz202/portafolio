@@ -11,6 +11,7 @@ export const en = {
     role: "Backend Developer",
     tagline:
       "3 years building APIs and backend systems across different languages, with no attachment to a single stack — the goal is to solve the problem well.",
+    scrollHint: "Scroll",
   },
   warp: {
     label: "Initiating hyperspace jump",

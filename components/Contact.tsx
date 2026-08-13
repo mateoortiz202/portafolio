@@ -8,7 +8,7 @@ export default function Contact() {
   const { t } = useLocale();
 
   return (
-    <RevealSection>
+    <RevealSection reverse={true} cosmic={4}>
       <div className="marker">{t.contact.marker}</div>
       <h2>{t.contact.heading}</h2>
       <p className="body-text">{t.contact.body}</p>

@@ -12,7 +12,7 @@ export default function Projects() {
   const comingSoon = locale === "es" ? "Próximamente" : "Coming soon";
 
   return (
-    <RevealSection>
+    <RevealSection reverse={false} cosmic={5}>
       <div className="marker">{t.projects.marker}</div>
       <h2>{t.projects.heading}</h2>
       <div className={styles.grid}>

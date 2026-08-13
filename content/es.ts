@@ -11,6 +11,7 @@ export const es = {
     role: "Backend Developer",
     tagline:
       "3 años construyendo APIs y sistemas backend en distintos lenguajes, sin apego a un único stack — el objetivo es resolver bien el problema.",
+    scrollHint: "Desplázate",
   },
   warp: {
     label: "Iniciando salto a hipervelocidad",

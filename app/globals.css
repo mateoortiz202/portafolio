@@ -39,6 +39,18 @@ canvas#stars {
   display: block;
 }
 
+.cosmic-photo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .nav {
   position: fixed;
   top: 0;
@@ -128,7 +140,33 @@ p.body-text {
   border-radius: 999px;
 }
 
-.flat > * {
+/*
+  El planeta de cada sección se dibuja directamente en el canvas de fondo
+  (Starfield), no como elemento del DOM — así la "llegada" es parte del mismo
+  fondo inmersivo que ya anima el starfield y el salto a hipervelocidad, en vez
+  de un elemento decorativo aparte. Aquí solo alternamos el lado del texto.
+  Se usa "section.sec-split" (no ".sec-split" a secas) para igualar la
+  especificidad de "section.sec" y poder sobreescribirlo de forma confiable.
+*/
+section.sec-split {
+  display: flex;
+  align-items: center;
+  padding: 0 8vw;
+  max-width: none;
+}
+
+.sec-content {
+  position: relative;
+  z-index: 2;
+  max-width: 480px;
+}
+.sec-split:not(.reverse) .sec-content {
+  margin-right: auto;
+}
+.sec-split.reverse .sec-content {
+  margin-left: auto;
+}
+.sec-content > * {
   opacity: 0;
   transform: translateY(16px);
   transition:
@@ -136,7 +174,7 @@ p.body-text {
     transform 0.6s ease;
   transition-delay: calc(var(--i, 0) * 90ms);
 }
-.flat.visible > * {
+section.sec-split.visible .sec-content > * {
   opacity: 1;
   transform: translateY(0);
 }
@@ -174,6 +212,41 @@ footer {
   font-family: var(--font-label);
 }
 
+.scroll-hint {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.scroll-hint-chevron {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(45deg);
+  animation: scroll-hint-bounce 1.6s ease-in-out infinite;
+}
+@keyframes scroll-hint-bounce {
+  0%,
+  100% {
+    transform: rotate(45deg) translate(0, 0);
+  }
+  50% {
+    transform: rotate(45deg) translate(3px, 3px);
+  }
+}
+
 @media (max-width: 768px) {
   .nav {
     padding: 14px 20px;
@@ -182,15 +255,29 @@ footer {
   section.sec {
     padding: 0 6vw;
   }
+  section.sec-split {
+    padding: 0 6vw;
+  }
+  .sec-content {
+    max-width: 100%;
+  }
+  .sec-split:not(.reverse) .sec-content,
+  .sec-split.reverse .sec-content {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flat > * {
+  .sec-content > * {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
   .warp-label {
     transition: none !important;
+  }
+  .scroll-hint-chevron {
+    animation: none !important;
   }
 }

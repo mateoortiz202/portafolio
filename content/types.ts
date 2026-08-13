@@ -8,6 +8,7 @@ export interface Dictionary {
     name: string;
     role: string;
     tagline: string;
+    scrollHint: string;
   };
   warp: {
     label: string;
