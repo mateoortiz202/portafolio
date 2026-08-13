@@ -1,0 +1,38 @@
+.grid {
+  display: flex;
+  width: 100%;
+  max-width: 900px;
+  margin-top: 32px;
+  gap: 0;
+}
+
+.tile {
+  position: relative;
+  flex: 1;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #0b0e18;
+  border: 1px solid rgba(var(--accent-rgb), 0.12);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  background: rgba(5, 6, 10, 0.55);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tile:hover .overlay {
+  opacity: 1;
+}
+
+.overlayText {
+  font-family: var(--font-label);
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--accent);
+}

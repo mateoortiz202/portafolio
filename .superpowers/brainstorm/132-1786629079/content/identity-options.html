@@ -1,0 +1,86 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<h2>¿Cuál identidad visual (color + tipografía) se siente más tú?</h2>
+<p class="subtitle">Mismo fondo espacial en los tres. Cambia el color de acento y el tratamiento tipográfico del titular vs. las etiquetas.</p>
+
+<style>
+  .id-mock {
+    position: relative; height: 260px; border-radius: 8px; overflow: hidden;
+    background: radial-gradient(ellipse at 50% 120%, #10131f 0%, #05060a 70%);
+    padding: 26px; display: flex; flex-direction: column; justify-content: center;
+  }
+  .id-mock::before {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+      radial-gradient(1px 1px at 80% 15%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 60% 70%, #fff, transparent),
+      radial-gradient(1px 1px at 30% 80%, #cbd5e1, transparent),
+      radial-gradient(1px 1px at 90% 60%, #fff, transparent);
+    opacity: 0.5;
+  }
+  .id-mock .marker { position: relative; font-size: 11px; letter-spacing: 3px; margin-bottom: 12px; }
+  .id-mock .name { position: relative; font-size: 30px; margin-bottom: 6px; }
+  .id-mock .role { position: relative; font-size: 14px; color: #94a3b8; margin-bottom: 16px; }
+  .id-mock .tag { position: relative; display: inline-block; font-size: 11px; padding: 5px 11px; border-radius: 999px; border: 1px solid; width: fit-content; }
+
+  .id-a .marker, .id-a .tag { color: #7dd3fc; border-color: #7dd3fc; font-family: 'JetBrains Mono', monospace; }
+  .id-a .name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #f1f5f9; letter-spacing: -0.5px; }
+
+  .id-b .marker, .id-b .tag { color: #fbbf6d; border-color: #fbbf6d; font-family: 'Inter', sans-serif; letter-spacing: 2px; }
+  .id-b .name { font-family: 'Playfair Display', serif; font-weight: 600; font-style: italic; color: #fdf6ec; }
+
+  .id-c .marker, .id-c .tag { color: #c4b5fd; border-color: #c4b5fd; font-family: 'JetBrains Mono', monospace; }
+  .id-c .name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #f1f5f9; letter-spacing: -1px; text-transform: uppercase; }
+</style>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="id-mock id-a">
+        <div class="marker">01 / INICIO</div>
+        <div class="name">Mauricio Ortiz</div>
+        <div class="role">Backend Developer · Rust</div>
+        <div class="tag">MongoDB</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Hielo / Técnico</h3>
+      <p>Acento cian, mono para etiquetas + sans geométrica para el titular. La que ya veníamos usando en las demos — sensación "dev/terminal" clara.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="id-mock id-b">
+        <div class="marker">01 / INICIO</div>
+        <div class="name">Mauricio Ortiz</div>
+        <div class="role">Backend Developer · Rust</div>
+        <div class="tag">MongoDB</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Hiperespacio cálido</h3>
+      <p>Acento ámbar (nod sutil al naranja de Rust), serif editorial en el titular como savor.it, sans neutra en el resto. Más "premium/editorial", menos "sitio de dev genérico".</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="id-mock id-c">
+        <div class="marker">01 / INICIO</div>
+        <div class="name">Mauricio Ortiz</div>
+        <div class="role">Backend Developer · Rust</div>
+        <div class="tag">MongoDB</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Nebulosa profunda</h3>
+      <p>Acento violeta, titular sans en mayúsculas bien apretado. Más misterioso/sci-fi, menos "azul cliché de espacio".</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle">Click en tu favorita. Si quieres mezclar (ej. tipografía de B con color de A), dímelo por terminal.</p>

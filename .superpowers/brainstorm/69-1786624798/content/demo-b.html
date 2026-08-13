@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Demo B — Constelación minimalista</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #08090d;
+    color: #f1f5f9;
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+  .dots-layer {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 40px;
+    font-size: 12px; letter-spacing: 1px; color: #94a3b8;
+    background: linear-gradient(#08090dee, transparent);
+  }
+  section {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 12vw;
+    max-width: 900px;
+    border-top: 1px solid rgba(148,163,184,0.08);
+  }
+  .marker {
+    font-size: 12px; letter-spacing: 3px; color: #7dd3fc; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .marker .dot { width: 5px; height: 5px; border-radius: 50%; background: #7dd3fc; }
+  h1 { font-size: clamp(32px, 6vw, 60px); margin: 0 0 12px; font-weight: 600; letter-spacing: -0.5px; }
+  h2 { font-size: clamp(22px, 3.6vw, 32px); margin: 0 0 18px; font-weight: 600; }
+  p.role { color: #94a3b8; font-size: 17px; margin: 0 0 28px; }
+  p.body-text { color: #cbd5e1; line-height: 1.7; font-size: 16px; max-width: 560px; }
+  .tag-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .tag { border: 1px solid #1e293b; color: #94a3b8; font-size: 12px; padding: 6px 12px; border-radius: 999px; }
+  footer { position: relative; z-index: 1; text-align: center; padding: 60px 0 100px; color: #64748b; font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="dots-layer" id="dotsLayer"></div>
+  <svg class="dots-layer" id="linesLayer" style="width:100%;height:100%"></svg>
+  <div class="nav"><span>MAURICIO ORTIZ</span><span>Demo B — Constelación minimalista</span></div>
+
+  <section>
+    <div class="marker"><span class="dot"></span>01 / INICIO</div>
+    <h1>Mauricio Ortiz</h1>
+    <p class="role">Backend Developer · Rust · Odoo-Python</p>
+    <p class="body-text">Unos pocos puntos de luz que se conectan al desplazarte. Todo lo demás es espacio en blanco y tipografía.</p>
+  </section>
+
+  <section>
+    <div class="marker"><span class="dot"></span>02 / SOBRE MÍ</div>
+    <h2>Tecnólogo ADSI, ganador SENASOFT 2022</h2>
+    <p class="body-text">Perseverante, autodidacta y orientado a resolver problemas. Me apasiona entender cómo funcionan las cosas y compartir ese conocimiento.</p>
+  </section>
+
+  <section>
+    <div class="marker"><span class="dot"></span>03 / STACK</div>
+    <h2>Backend, principalmente</h2>
+    <div class="tag-row">
+      <span class="tag">Rust</span><span class="tag">MongoDB</span><span class="tag">Odoo · Python</span>
+      <span class="tag">Node.js</span><span class="tag">NestJS</span><span class="tag">Java · Spring Boot</span><span class="tag">React</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="marker"><span class="dot"></span>04 / EXPERIENCIA</div>
+    <h2>Senior Backend, APIs con clientes como EPM</h2>
+    <p class="body-text">Liderazgo técnico de equipo Backend, desarrollo de APIs robustas y escalables, e implementación de soluciones sobre Odoo.</p>
+  </section>
+
+  <section>
+    <div class="marker"><span class="dot"></span>05 / CONTACTO</div>
+    <h2>Hablemos</h2>
+    <p class="body-text">Abierto a conversar sobre nuevas oportunidades y desafíos.</p>
+  </section>
+
+  <footer>Fin de la demo B — vuelve a la pestaña anterior para elegir otra opción</footer>
+
+<script>
+(function () {
+  const dotsLayer = document.getElementById('dotsLayer');
+  const svg = document.getElementById('linesLayer');
+  const W = window.innerWidth, H = window.innerHeight;
+
+  const points = [
+    {x: 0.18*W, y: 0.28*H}, {x: 0.62*W, y: 0.18*H}, {x: 0.42*W, y: 0.55*H},
+    {x: 0.78*W, y: 0.62*H}, {x: 0.28*W, y: 0.72*H}
+  ];
+
+  points.forEach(p => {
+    const d = document.createElement('div');
+    d.style.position = 'absolute';
+    d.style.left = p.x + 'px';
+    d.style.top = p.y + 'px';
+    d.style.width = '3px'; d.style.height = '3px';
+    d.style.borderRadius = '50%';
+    d.style.background = '#7dd3fc';
+    d.style.boxShadow = '0 0 8px 2px rgba(125,211,252,0.5)';
+    dotsLayer.appendChild(d);
+  });
+
+  const lines = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const a = points[i], b = points[i+1];
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
+    line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+    line.setAttribute('stroke', '#7dd3fc');
+    line.setAttribute('stroke-width', '1');
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    line.setAttribute('stroke-dasharray', len);
+    line.setAttribute('stroke-dashoffset', len);
+    line.style.opacity = '0.55';
+    svg.appendChild(line);
+    lines.push({ el: line, len });
+  }
+
+  function onScroll() {
+    const scrollFraction = Math.min(1, window.scrollY / (window.innerHeight * 1.2));
+    const totalSegments = lines.length;
+    const progressPerSegment = 1 / totalSegments;
+
+    lines.forEach((l, i) => {
+      const segStart = i * progressPerSegment;
+      const segProgress = Math.max(0, Math.min(1, (scrollFraction - segStart) / progressPerSegment));
+      l.el.setAttribute('stroke-dashoffset', l.len * (1 - segProgress));
+    });
+
+    dotsLayer.style.transform = `translateY(${window.scrollY * 0.12}px)`;
+    svg.style.transform = `translateY(${window.scrollY * 0.12}px)`;
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>

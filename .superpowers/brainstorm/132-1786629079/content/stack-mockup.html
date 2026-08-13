@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Mockup — Sección Stack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/files/shared.css">
+<style>
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 14px;
+    margin-top: 32px;
+    max-width: 640px;
+  }
+  .stack-tile {
+    aspect-ratio: 1;
+    border: 1px solid rgba(125,211,252,0.18);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-label);
+    font-size: 12px; letter-spacing: 1px;
+    color: #94a3b8;
+    text-align: center; padding: 10px;
+    transition: border-color .3s ease, box-shadow .3s ease, color .3s ease, transform .3s ease;
+  }
+  .stack-tile:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 24px rgba(125,211,252,0.25);
+    transform: translateY(-3px);
+  }
+</style>
+</head>
+<body class="identity-d">
+  <canvas id="stars"></canvas>
+  <div class="nav"><span>MAURICIO ORTIZ</span><span class="accent">Mockup — Sección Stack</span></div>
+
+  <section class="sec">
+    <div class="marker">03 / STACK</div>
+    <h2>Backend, principalmente</h2>
+    <p class="body-text">Mismo tratamiento monocromático (borde + glow cian) para todos, sin depender de colores de marca ajenos — a diferencia del grid de logos de clientes que inspiró esto.</p>
+    <div class="stack-grid">
+      <div class="stack-tile">RUST</div>
+      <div class="stack-tile">MONGODB</div>
+      <div class="stack-tile">ODOO · PYTHON</div>
+      <div class="stack-tile">NODE.JS</div>
+      <div class="stack-tile">NESTJS · TS</div>
+      <div class="stack-tile">JAVA · SPRING</div>
+      <div class="stack-tile">REACT</div>
+      <div class="stack-tile">DJANGO</div>
+    </div>
+  </section>
+
+  <footer>Fin del mockup — vuelve a la pestaña anterior</footer>
+
+  <script src="/files/shared.js"></script>
+</body>
+</html>

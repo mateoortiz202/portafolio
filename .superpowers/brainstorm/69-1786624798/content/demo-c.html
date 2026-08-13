@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Demo C — Híbrido</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #05060a;
+    color: #f1f5f9;
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 40px;
+    font-size: 12px; letter-spacing: 1px; color: #94a3b8;
+    background: linear-gradient(#05060aee, transparent);
+  }
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 0 12vw;
+    overflow: hidden;
+    background: radial-gradient(circle at 68% 45%, rgba(125,211,252,0.10) 0%, transparent 55%);
+  }
+  .orbit-wrap {
+    position: absolute; right: 6vw; top: 50%; width: 320px; height: 320px;
+    transform: translateY(-50%);
+  }
+  .orbit-ring {
+    position: absolute; inset: 0; border: 1px solid rgba(125,211,252,0.25); border-radius: 50%;
+  }
+  .orbit-ring.r2 { inset: 40px; border-color: rgba(125,211,252,0.15); }
+  .planet {
+    position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #bae6fd, #38bdf8 60%, #0ea5e9);
+    box-shadow: 0 0 30px 6px rgba(56,189,248,0.45);
+  }
+  .orbiter {
+    position: absolute; inset: 0;
+    animation: spin 9s linear infinite;
+  }
+  .orbiter .particle {
+    position: absolute; top: 8px; left: 50%; width: 8px; height: 8px; margin-left: -4px;
+    border-radius: 50%; background: #7dd3fc; box-shadow: 0 0 12px 3px rgba(125,211,252,0.6);
+  }
+  .orbiter2 { animation: spin 15s linear infinite reverse; }
+  .orbiter2 .particle { top: 48px; width: 5px; height: 5px; margin-left: -2.5px; background: #a5f3fc; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  section.flat {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 12vw;
+    max-width: 900px;
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  section.flat.visible { opacity: 1; transform: translateY(0); }
+
+  .marker { font-size: 12px; letter-spacing: 3px; color: #7dd3fc; margin-bottom: 14px; }
+  h1 { font-size: clamp(32px, 6vw, 64px); margin: 0 0 12px; font-weight: 700; letter-spacing: -1px; }
+  h2 { font-size: clamp(22px, 3.6vw, 32px); margin: 0 0 18px; font-weight: 600; }
+  p.role { color: #94a3b8; font-size: 18px; margin: 0 0 28px; }
+  p.body-text { color: #cbd5e1; line-height: 1.7; font-size: 16px; max-width: 560px; }
+  .tag-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .tag { border: 1px solid #334155; color: #94a3b8; font-size: 12px; padding: 6px 12px; border-radius: 999px; }
+  footer { position: relative; text-align: center; padding: 60px 0 100px; color: #64748b; font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="nav"><span>MAURICIO ORTIZ</span><span>Demo C — Híbrido</span></div>
+
+  <div class="hero">
+    <div>
+      <div class="marker">01 / INICIO</div>
+      <h1>Mauricio Ortiz</h1>
+      <p class="role">Backend Developer · Rust · Odoo-Python</p>
+      <p class="body-text">Un único acento animado en el hero (órbita continua). El resto del recorrido es plano y minimalista, con un fundido suave al llegar a cada sección.</p>
+    </div>
+    <div class="orbit-wrap">
+      <div class="orbit-ring"></div>
+      <div class="orbit-ring r2"></div>
+      <div class="planet"></div>
+      <div class="orbiter"><div class="particle"></div></div>
+      <div class="orbiter orbiter2"><div class="particle"></div></div>
+    </div>
+  </div>
+
+  <section class="flat">
+    <div class="marker">02 / SOBRE MÍ</div>
+    <h2>Tecnólogo ADSI, ganador SENASOFT 2022</h2>
+    <p class="body-text">Perseverante, autodidacta y orientado a resolver problemas. Me apasiona entender cómo funcionan las cosas y compartir ese conocimiento.</p>
+  </section>
+
+  <section class="flat">
+    <div class="marker">03 / STACK</div>
+    <h2>Backend, principalmente</h2>
+    <div class="tag-row">
+      <span class="tag">Rust</span><span class="tag">MongoDB</span><span class="tag">Odoo · Python</span>
+      <span class="tag">Node.js</span><span class="tag">NestJS</span><span class="tag">Java · Spring Boot</span><span class="tag">React</span>
+    </div>
+  </section>
+
+  <section class="flat">
+    <div class="marker">04 / EXPERIENCIA</div>
+    <h2>Senior Backend, APIs con clientes como EPM</h2>
+    <p class="body-text">Liderazgo técnico de equipo Backend, desarrollo de APIs robustas y escalables, e implementación de soluciones sobre Odoo.</p>
+  </section>
+
+  <section class="flat">
+    <div class="marker">05 / CONTACTO</div>
+    <h2>Hablemos</h2>
+    <p class="body-text">Abierto a conversar sobre nuevas oportunidades y desafíos.</p>
+  </section>
+
+  <footer>Fin de la demo C — vuelve a la pestaña anterior para elegir otra opción</footer>
+
+<script>
+(function () {
+  const sections = document.querySelectorAll('section.flat');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.25 });
+  sections.forEach(s => io.observe(s));
+})();
+</script>
+</body>
+</html>

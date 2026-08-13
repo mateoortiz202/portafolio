@@ -1,0 +1,52 @@
+.stackGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 14px;
+  margin-top: 32px;
+  max-width: 640px;
+}
+
+.stackTile {
+  aspect-ratio: 1;
+  border: 1px solid rgba(var(--accent-rgb), 0.18);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-label);
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 10px;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.stackTile:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.25);
+  transform: translateY(-3px);
+}
+
+@media (max-width: 480px) {
+  .stackGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .stackGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stackTile {
+    transition: none;
+  }
+}

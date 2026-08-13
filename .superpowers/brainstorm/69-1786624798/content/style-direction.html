@@ -1,0 +1,145 @@
+<h2>¿Qué dirección de "espacio inmersivo" se siente más tú?</h2>
+<p class="subtitle">Las tres comparten: fondo oscuro, tipografía limpia, numeración de secciones y scroll animado. Difieren en cuánta "producción 3D" llevan y qué tan compleja es de construir/mantener.</p>
+
+<style>
+  .sd-mock {
+    position: relative;
+    height: 220px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 120%, #10131f 0%, #05060a 70%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+  }
+  .sd-mock .marker {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #7dd3fc;
+    opacity: 0.8;
+    margin-bottom: 8px;
+  }
+  .sd-mock .name {
+    font-size: 22px;
+    font-weight: 600;
+    color: #f1f5f9;
+    letter-spacing: 0.5px;
+  }
+  .sd-mock .role {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 6px;
+  }
+
+  /* A: dense layered starfield */
+  .sd-a::before, .sd-a::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+      radial-gradient(1px 1px at 80% 10%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 60% 70%, #fff, transparent),
+      radial-gradient(1px 1px at 30% 80%, #cbd5e1, transparent),
+      radial-gradient(1px 1px at 90% 60%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 45% 35%, #fff, transparent),
+      radial-gradient(1px 1px at 15% 55%, #cbd5e1, transparent),
+      radial-gradient(1px 1px at 70% 90%, #fff, transparent);
+    opacity: 0.9;
+  }
+  .sd-a::after {
+    background-image:
+      radial-gradient(60px 60px at 75% 25%, rgba(125,211,252,0.15), transparent);
+    opacity: 1;
+  }
+
+  /* B: minimal constellation */
+  .sd-b::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, #7dd3fc, transparent),
+      radial-gradient(1px 1px at 75% 20%, #7dd3fc, transparent),
+      radial-gradient(1px 1px at 50% 60%, #7dd3fc, transparent);
+    opacity: 0.7;
+  }
+  .sd-b .line {
+    position: absolute;
+    top: 38%; left: 20%;
+    width: 55%;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(125,211,252,0.6), transparent);
+  }
+
+  /* C: hero accent glow, rest flat */
+  .sd-c {
+    background: radial-gradient(circle at 30% 50%, rgba(125,211,252,0.18) 0%, transparent 45%), #05060a;
+  }
+  .sd-c::before {
+    content: "";
+    position: absolute;
+    top: 30%; left: 22%;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    border: 1px solid rgba(125,211,252,0.35);
+  }
+  .sd-c::after {
+    content: "";
+    position: absolute;
+    top: 34%; left: 26%;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #7dd3fc, rgba(125,211,252,0));
+    box-shadow: 0 0 25px 6px rgba(125,211,252,0.5);
+  }
+</style>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="sd-mock sd-a">
+        <div class="marker">01 — INICIO</div>
+        <div class="name">MAURICIO ORTIZ</div>
+        <div class="role">Backend Developer · Rust</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Viaje estelar 3D (WebGL/Three.js)</h3>
+      <p>Un campo de estrellas real en 3D por el que "vuelas" al hacer scroll; paralaje profundo, quizá una nave/planeta como hilo conductor entre secciones.</p>
+      <p class="label">Máximo impacto — mayor esfuerzo y riesgo de rendimiento/accesibilidad</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="sd-mock sd-b">
+        <div class="line"></div>
+        <div class="marker">01 — INICIO</div>
+        <div class="name">MAURICIO ORTIZ</div>
+        <div class="role">Backend Developer · Rust</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Constelación minimalista (CSS + GSAP)</h3>
+      <p>Pocas estrellas puntuales que conectan como constelación entre secciones; el "espacio" es una sensación sutil, no un escenario denso. Todo en 2D con animaciones de scroll suaves.</p>
+      <p class="label">Ligero y rápido de construir — impacto más discreto</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="sd-mock sd-c">
+        <div class="marker">01 — INICIO</div>
+        <div class="name">MAURICIO ORTIZ</div>
+        <div class="role">Backend Developer · Rust</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Híbrido: acento 3D + resto plano</h3>
+      <p>Un único elemento "hero" con órbita/partículas animadas (canvas o Three.js acotado) como pieza central de impacto; el resto de secciones es minimalista plano con parallax CSS sutil al hacer scroll.</p>
+      <p class="label">Recomendado: buen "wow" sin la complejidad ni el costo de rendimiento de A</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle">Click en la opción que más te llame. Si quieres mezclar ideas de varias, dímelo por terminal.</p>
