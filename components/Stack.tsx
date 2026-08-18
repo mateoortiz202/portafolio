@@ -8,7 +8,7 @@ export default function Stack() {
   const { t } = useLocale();
 
   return (
-    <RevealSection reverse={true} cosmic={2}>
+    <RevealSection reverse={true} glow={1}>
       <div className="marker">{t.stack.marker}</div>
       <h2>{t.stack.heading}</h2>
       <p className="body-text">{t.stack.body}</p>

@@ -1,62 +1,23 @@
-"use client";
-
-import {
-  Children,
-  cloneElement,
-  isValidElement,
-  useEffect,
-  useRef,
-  type CSSProperties,
-  type ReactElement,
-  type ReactNode,
-} from "react";
-import type { CosmicObjectVariant } from "@/lib/cosmicObjects";
+import type { ReactNode } from "react";
 
 interface RevealSectionProps {
   children: ReactNode;
   reverse?: boolean;
-  cosmic: CosmicObjectVariant;
+  glow: number;
 }
 
-export default function RevealSection({ children, reverse = false, cosmic }: RevealSectionProps) {
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.classList.add("visible");
-      return;
-    }
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add("visible");
-        });
-      },
-      { threshold: 0.25 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
+// La revelación del contenido (opacidad + escala) no se dispara por umbral:
+// Starfield.tsx la actualiza cada frame atada directamente al scroll, igual
+// que el salto a hipervelocidad — por eso este componente no necesita estado
+// ni observadores propios, solo marcar la sección para que Starfield la encuentre.
+export default function RevealSection({ children, reverse = false, glow }: RevealSectionProps) {
   return (
     <section
-      ref={ref}
       className={`sec sec-split${reverse ? " reverse" : ""}`}
-      data-cosmic={cosmic}
+      data-glow={glow}
+      data-glow-side={reverse ? "left" : "right"}
     >
-      <div className="sec-content">
-        {Children.map(children, (child, i) =>
-          isValidElement(child)
-            ? cloneElement(child as ReactElement<{ style?: CSSProperties }>, {
-                style: { "--i": i } as CSSProperties,
-              })
-            : child,
-        )}
-      </div>
+      <div className="sec-content">{children}</div>
     </section>
   );
 }

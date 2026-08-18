@@ -42,13 +42,20 @@ canvas#stars {
 .cosmic-photo {
   position: fixed;
   top: 50%;
-  left: 50%;
+  /* Pegada al borde derecho, centrada en ese borde: solo se ve la mitad. */
+  left: 100%;
   z-index: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   object-fit: cover;
   opacity: 0;
   pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .cosmic-photo {
+    left: 88%;
+  }
 }
 
 .nav {
@@ -159,6 +166,12 @@ section.sec-split {
   position: relative;
   z-index: 2;
   max-width: 480px;
+  /* Estado inicial antes de que Starfield.tsx tome control (evita el parpadeo
+     del primer frame); a partir de ahí, opacidad/escala se actualizan cada
+     frame atadas al scroll — sin transition, para no pelear con esos valores. */
+  opacity: 0;
+  transform: scale(0.2);
+  transform-origin: center;
 }
 .sec-split:not(.reverse) .sec-content {
   margin-right: auto;
@@ -166,17 +179,41 @@ section.sec-split {
 .sec-split.reverse .sec-content {
   margin-left: auto;
 }
-.sec-content > * {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 0.6s ease,
-    transform 0.6s ease;
-  transition-delay: calc(var(--i, 0) * 90ms);
-}
-section.sec-split.visible .sec-content > * {
-  opacity: 1;
-  transform: translateY(0);
+
+/*
+  Con scroll normal, la sección (y su texto) se desplaza verticalmente por la
+  página — eso se suma a cualquier animación y se lee como "movimiento
+  vertical". Para que el texto se comporte como el canvas (fijo en pantalla,
+  solo cambia de tamaño/opacidad), lo volvemos position:fixed: deja de
+  desplazarse con el documento, y solo la sección en foco queda visible.
+  Se respeta prefers-reduced-motion dejándolo en flujo normal (una sección
+  legible a la vez, sin depender de que JS la posicione).
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .sec-content {
+    position: fixed;
+    top: 50%;
+    margin: 0 !important;
+    transform: translateY(-50%) scale(0.2);
+    /* Evita que los enlaces de una sección fuera de foco (invisible pero
+       aún en el DOM en la misma posición fija) intercepten clics.
+       Starfield.tsx lo habilita solo cuando la sección está en foco. */
+    pointer-events: none;
+  }
+  .sec-split:not(.reverse) .sec-content {
+    left: 8vw;
+  }
+  .sec-split.reverse .sec-content {
+    right: 8vw;
+  }
+
+  @media (max-width: 768px) {
+    .sec-split:not(.reverse) .sec-content,
+    .sec-split.reverse .sec-content {
+      left: 6vw;
+      right: 6vw;
+    }
+  }
 }
 
 .warp-zone {

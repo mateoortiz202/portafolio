@@ -6,19 +6,18 @@ const SCRATCH =
 const OUT_DIR = path.resolve("public/images/cosmic");
 const SIZE = 900;
 
-const jobs = [
-  { in: "galaxy.jpg", out: "galaxy.webp" },
-  { in: "star.jpg", out: "star.webp" },
-  { in: "nebula.jpg", out: "nebula.webp" },
-  { in: "planet.jpg", out: "planet.webp" },
-  { in: "blackhole.jpg", out: "blackhole.webp" },
-];
+// Único objeto cósmico del sitio: la galaxia del Hero (ver lib/galaxy.ts).
+const jobs = [{ in: "galaxy.jpg", out: "galaxy.webp", fit: "cover" }];
 
 for (const job of jobs) {
   const inputPath = path.join(SCRATCH, job.in);
   const outputPath = path.join(OUT_DIR, job.out);
   await sharp(inputPath)
-    .resize(SIZE, SIZE, { fit: "cover", position: "attention" })
+    .resize(SIZE, SIZE, {
+      fit: job.fit,
+      position: "attention",
+      background: job.background,
+    })
     .webp({ quality: 82 })
     .toFile(outputPath);
   console.log("wrote", outputPath);

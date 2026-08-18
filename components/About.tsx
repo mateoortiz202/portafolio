@@ -7,7 +7,7 @@ export default function About() {
   const { t } = useLocale();
 
   return (
-    <RevealSection reverse={false} cosmic={1}>
+    <RevealSection reverse={false} glow={0}>
       <div className="marker">{t.about.marker}</div>
       <h2>{t.about.heading}</h2>
       <p className="body-text">{t.about.body}</p>

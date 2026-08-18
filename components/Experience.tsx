@@ -8,7 +8,7 @@ export default function Experience() {
   const { t } = useLocale();
 
   return (
-    <RevealSection reverse={false} cosmic={3}>
+    <RevealSection reverse={false} glow={2}>
       <div className="marker">{t.experience.marker}</div>
       <h2>{t.experience.heading}</h2>
       <p className="body-text">{t.experience.body}</p>
