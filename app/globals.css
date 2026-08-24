@@ -395,8 +395,9 @@ p.body-text {
 
 /* Enlace bidireccional estrella <-> tile: pasar el mouse por cualquiera de
    los dos hace zoom/resalta al otro. Se repite una regla por estrella (son
-   solo 8, mismo tratamiento cada una) — .sec-split es seguro como ámbito
+   9, mismo tratamiento cada una) — .sec-split es seguro como ámbito
    porque .tile-N/.star-N solo existen dentro de la sección Stack. */
+/* Zoom del diagrama: disparado por hover en la estrella O en el tile correspondiente. */
 .sec-split:has(.star-1:hover) .stars-layer,
 .sec-split:has(.star-1:hover) .const-svg,
 .sec-split:has(.tile-1:hover) .stars-layer,
@@ -453,27 +454,62 @@ p.body-text {
   transform: scale(1.22);
   transform-origin: 69% 92%;
 }
+.sec-split:has(.star-9:hover) .stars-layer,
+.sec-split:has(.star-9:hover) .const-svg,
+.sec-split:has(.tile-9:hover) .stars-layer,
+.sec-split:has(.tile-9:hover) .const-svg {
+  transform: scale(1.22);
+  transform-origin: 45% 80%;
+}
 
+/* Ficha de info: se dispara desde cualquiera de los dos lados. */
 .sec-split:has(.star-1:hover) .card-1,
-.sec-split:has(.tile-1:hover) .card-1,
+.sec-split:has(.tile-1:hover) .card-1 {
+  opacity: 1;
+  transform: translateY(0);
+}
 .sec-split:has(.star-2:hover) .card-2,
-.sec-split:has(.tile-2:hover) .card-2,
+.sec-split:has(.tile-2:hover) .card-2 {
+  opacity: 1;
+  transform: translateY(0);
+}
 .sec-split:has(.star-3:hover) .card-3,
-.sec-split:has(.tile-3:hover) .card-3,
+.sec-split:has(.tile-3:hover) .card-3 {
+  opacity: 1;
+  transform: translateY(0);
+}
 .sec-split:has(.star-4:hover) .card-4,
-.sec-split:has(.tile-4:hover) .card-4,
+.sec-split:has(.tile-4:hover) .card-4 {
+  opacity: 1;
+  transform: translateY(0);
+}
 .sec-split:has(.star-5:hover) .card-5,
-.sec-split:has(.tile-5:hover) .card-5,
+.sec-split:has(.tile-5:hover) .card-5 {
+  opacity: 1;
+  transform: translateY(0);
+}
 .sec-split:has(.star-6:hover) .card-6,
-.sec-split:has(.tile-6:hover) .card-6,
+.sec-split:has(.tile-6:hover) .card-6 {
+  opacity: 1;
+  transform: translateY(0);
+}
 .sec-split:has(.star-7:hover) .card-7,
-.sec-split:has(.tile-7:hover) .card-7,
+.sec-split:has(.tile-7:hover) .card-7 {
+  opacity: 1;
+  transform: translateY(0);
+}
 .sec-split:has(.star-8:hover) .card-8,
 .sec-split:has(.tile-8:hover) .card-8 {
   opacity: 1;
   transform: translateY(0);
 }
+.sec-split:has(.star-9:hover) .card-9,
+.sec-split:has(.tile-9:hover) .card-9 {
+  opacity: 1;
+  transform: translateY(0);
+}
 
+/* Hover en el tile -> la estrella reacciona igual que si se pasara sobre ella. */
 .sec-split:has(.tile-1:hover) .star-1 .star-shape,
 .sec-split:has(.tile-1:hover) .star-1 .star-mono {
   opacity: 1;
@@ -570,20 +606,67 @@ p.body-text {
   transform: scale(1.08);
   color: var(--accent);
 }
+.sec-split:has(.tile-9:hover) .star-9 .star-shape,
+.sec-split:has(.tile-9:hover) .star-9 .star-mono {
+  opacity: 1;
+}
+.sec-split:has(.tile-9:hover) .star-9 .star-shape {
+  transform: scale(1.28);
+  filter: drop-shadow(0 0 14px rgba(var(--accent-rgb), 0.9));
+}
+.sec-split:has(.tile-9:hover) .star-9 .star-mono {
+  transform: scale(1.08);
+  color: var(--accent);
+}
 
-.sec-split:has(.star-1:hover) .tile-1,
-.sec-split:has(.star-2:hover) .tile-2,
-.sec-split:has(.star-3:hover) .tile-3,
-.sec-split:has(.star-4:hover) .tile-4,
-.sec-split:has(.star-5:hover) .tile-5,
-.sec-split:has(.star-6:hover) .tile-6,
-.sec-split:has(.star-7:hover) .tile-7,
+/* Hover en la estrella -> el tile correspondiente se resalta igual que su propio hover. */
+.sec-split:has(.star-1:hover) .tile-1 {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
+.sec-split:has(.star-2:hover) .tile-2 {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
+.sec-split:has(.star-3:hover) .tile-3 {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
+.sec-split:has(.star-4:hover) .tile-4 {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
+.sec-split:has(.star-5:hover) .tile-5 {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
+.sec-split:has(.star-6:hover) .tile-6 {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
+.sec-split:has(.star-7:hover) .tile-7 {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
 .sec-split:has(.star-8:hover) .tile-8 {
   border-color: var(--accent);
   color: var(--accent);
   box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
 }
+.sec-split:has(.star-9:hover) .tile-9 {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
 
+/* Atenúa el resto de estrellas cuando cualquier tile está en hover (el .const-area:hover ya cubre el hover directo sobre una estrella). */
 .sec-split:has(.tile-1:hover) .star-shape,
 .sec-split:has(.tile-1:hover) .star-mono,
 .sec-split:has(.tile-2:hover) .star-shape,
@@ -599,7 +682,9 @@ p.body-text {
 .sec-split:has(.tile-7:hover) .star-shape,
 .sec-split:has(.tile-7:hover) .star-mono,
 .sec-split:has(.tile-8:hover) .star-shape,
-.sec-split:has(.tile-8:hover) .star-mono {
+.sec-split:has(.tile-8:hover) .star-mono,
+.sec-split:has(.tile-9:hover) .star-shape,
+.sec-split:has(.tile-9:hover) .star-mono {
   opacity: 0.4;
 }
 

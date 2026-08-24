@@ -3,7 +3,7 @@ interface StackConstellationProps {
   descriptions: string[];
 }
 
-// Coordenadas fijas (espacio 0-100 en ambos ejes) de las 8 estrellas — mismo
+// Coordenadas fijas (espacio 0-100 en ambos ejes) de las 9 estrellas — mismo
 // orden que `items`/`descriptions`. El polyline se deriva de aquí para que
 // las líneas y los puntos nunca queden desalineados entre sí.
 const STAR_POSITIONS = [
@@ -15,6 +15,7 @@ const STAR_POSITIONS = [
   { x: 79, y: 44 },
   { x: 89, y: 72 },
   { x: 69, y: 92 },
+  { x: 45, y: 80 },
 ];
 
 const STAR_PATH = "M0,-10 L2.6,-2.6 L10,0 L2.6,2.6 L0,10 L-2.6,2.6 L-10,0 L-2.6,-2.6 Z";
