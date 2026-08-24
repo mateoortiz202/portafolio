@@ -258,11 +258,11 @@ p.body-text {
 /* Icono monocromático dentro de cada tile del Stack (ver TechIcon.tsx) —
    mismo tamaño/color en los 8 (currentColor: sigue el color del tile, gris en
    reposo y acento en hover, igual que el texto de al lado). */
+/* El fill va por ícono (color de marca real, ver TechIcon.tsx) — ya no sigue
+   el color del texto del tile. */
 .tile-icon {
   width: 28px;
   height: 28px;
-  fill: currentColor;
-  transition: fill 0.3s ease;
 }
 
 @media (max-width: 768px) {
