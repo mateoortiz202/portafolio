@@ -35,6 +35,9 @@ export interface Dictionary {
     heading: string;
     body: string;
     epmMention: string;
+    // Las 3 etapas reales del camino interactivo (ver ExperiencePath.tsx),
+    // en orden cronológico.
+    stops: { role: string; duration: string; blurb: string }[];
   };
   projects: {
     marker: string;

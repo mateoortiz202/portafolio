@@ -54,9 +54,26 @@ export const en = {
   },
   experience: {
     marker: "04 / EXPERIENCE",
-    heading: "3 years building backend systems",
-    body: "Senior Backend at a software development company, leading part of the Backend team and building robust, scalable APIs. Before that, experience as a Fullstack JavaScript developer with React. I also currently work with Python on implementation and customization projects on enterprise platforms.",
+    heading: "+3 years building backend systems",
+    body: "Senior Backend at my current company — I joined as semi-senior and was promoted in under a year. Before that, I led a backend team with TypeScript and NestJS from my first months in the field, and picked up additional experience with Python at another company. Today I build robust, scale-minded APIs, owning technical decisions end to end.",
     epmMention: "One of those projects involved direct work with EPM as a client.",
+    stops: [
+      {
+        role: "NestJS + Team Lead",
+        duration: "1 year 3 months",
+        blurb: "First backend role, leading part of the team from the start.",
+      },
+      {
+        role: "Backend with Python",
+        duration: "~1 year",
+        blurb: "Additional experience at another company.",
+      },
+      {
+        role: "Senior Backend — current",
+        duration: "+1 year, ongoing",
+        blurb: "Promoted from semi-senior in under a year. Still here.",
+      },
+    ],
   },
   projects: {
     marker: "05 / PROJECTS",
