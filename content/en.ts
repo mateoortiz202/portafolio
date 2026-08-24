@@ -18,15 +18,28 @@ export const en = {
   },
   about: {
     marker: "02 / ABOUT",
-    heading: "ADSI Technologist, SENASOFT 2022 winner",
+    heading: "ADSI Technologist",
+    badge: "SENASOFT 2022 · Winner",
     body: "I won the Full Development category at SENASOFT 2022, a competition that tested my ability to learn and solve problems under pressure. I'm self-taught and persistent: when I don't know something, I learn it; once I learn it, I like to share it. I care about technology that improves people's lives, and I see programming as a tool to build solutions with real impact.",
     traits: ["Self-taught", "Problem solving", "Persistent", "Impact-driven"],
+    thesis: "My favorite tool isn't a language: it's curiosity.",
   },
   stack: {
     marker: "03 / STACK",
     heading: "Polyglot backend",
     body: "No single flagship language — the same care in every stack.",
-    items: ["Rust", "TypeScript", "Python", "MongoDB", "NestJS", "React", "Java · Spring Boot", "Node.js"],
+    items: ["TypeScript", "Python", "Rust", "MongoDB", "NestJS", "Django", "Java · Spring Boot", "Node.js"],
+    // TODO(Mateo): draft — confirm or correct each one before publishing.
+    descriptions: [
+      "My go-to language for backend APIs — strong typing, fast to iterate on.",
+      "Automation and integrations on top of enterprise platforms (Odoo).",
+      "For systems where performance and memory safety aren't negotiable.",
+      "Flexible data modeling for APIs that evolve quickly.",
+      "My default framework for building robust backend APIs.",
+      "For APIs and admin panels that need to ship fast and stay well-structured.",
+      "Enterprise backend in environments where stability comes first.",
+      "The base underneath almost everything above — the common runtime for TypeScript and JavaScript.",
+    ],
   },
   experience: {
     marker: "04 / EXPERIENCE",

@@ -16,14 +16,19 @@ export interface Dictionary {
   about: {
     marker: string;
     heading: string;
+    badge: string;
     body: string;
     traits: string[];
+    thesis: string;
   };
   stack: {
     marker: string;
     heading: string;
     body: string;
     items: string[];
+    // Mismo índice que `items` — descripción corta para la ficha de la
+    // constelación (ver StackConstellation.tsx).
+    descriptions: string[];
   };
   experience: {
     marker: string;

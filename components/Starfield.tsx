@@ -159,17 +159,22 @@ export default function Starfield() {
           // el texto ya llegó casi del todo (90-100%). Contacto (3) se deja
           // fuera a propósito, para no apagarlo justo donde están los enlaces.
           pausesNearFullFocus: glowIndex <= 2,
-          content: el.querySelector<HTMLElement>(".sec-content"),
+          // .sec-aux es un bloque decorativo opcional junto al principal
+          // (p. ej. la frase-tesis de "Sobre mí") — se revela igual que
+          // .sec-content, con la misma opacidad/escala atadas al scroll.
+          contents: Array.from(el.querySelectorAll<HTMLElement>(".sec-content, .sec-aux")),
         };
       })
-      .filter((s): s is typeof s & { content: HTMLElement } => s.content !== null);
+      .filter((s): s is typeof s & { contents: HTMLElement[] } => s.contents.length > 0);
 
     // Sin animación: el contenido queda visible de una vez (en flujo normal,
     // ver el media query prefers-reduced-motion en globals.css), sin depender del scroll.
     if (reducedMotion) {
       for (const section of glowSections) {
-        section.content.style.opacity = "1";
-        section.content.style.transform = "none";
+        for (const content of section.contents) {
+          content.style.opacity = "1";
+          content.style.transform = "none";
+        }
       }
     }
 
@@ -200,6 +205,14 @@ export default function Starfield() {
 
     function maxRadius() {
       return Math.hypot(W, H) * 0.65;
+    }
+
+    // 1 hasta 0.75 de proximity, luego baja suave (smoothstep) hasta 0 en 1.0.
+    function fadeNearFullFocus(proximity: number) {
+      const start = 0.75;
+      if (proximity <= start) return 1;
+      const p = Math.min(1, (proximity - start) / (1 - start));
+      return 1 - p * p * (3 - 2 * p);
     }
 
     const lenis = reducedMotion ? null : new Lenis({ lerp: 0.1 });
@@ -309,19 +322,34 @@ export default function Starfield() {
           const section = glowSections[i];
           const glowProximity = sectionProximities[i];
 
-          const paused = section.pausesNearFullFocus && glowProximity >= 0.9;
-          if (glowProximity > 0.01 && !paused) {
-            drawSectionGlow(ctx!, cx, cy, W, H, section.side, glowProximity, SECTION_GLOW_COLORS[section.colorIndex]);
+          // "pausesNearFullFocus" apagaba el glow con un interruptor binario
+          // justo al cruzar 0.9 — eso se veía (y se dejaba de ver) de golpe,
+          // sin transición, tanto al llegar como al alejarse de la sección.
+          // En su lugar, se desvanece de forma continua entre 0.75 y 1.0.
+          const fade = section.pausesNearFullFocus ? fadeNearFullFocus(glowProximity) : 1;
+          if (glowProximity > 0.01 && fade > 0.001) {
+            drawSectionGlow(
+              ctx!,
+              cx,
+              cy,
+              W,
+              H,
+              section.side,
+              glowProximity * fade,
+              SECTION_GLOW_COLORS[section.colorIndex],
+            );
           }
 
-          // El contenedor completo (no cada hijo por separado) crece/se
-          // desvanece como un solo bloque. El translateY(-50%) es el mismo
-          // que ya centra verticalmente al volverse "fixed" en CSS — se debe
-          // repetir aquí porque el estilo inline reemplaza el transform entero.
+          // Cada contenedor de la sección (el principal y el auxiliar, si
+          // existe) crece/se desvanece como un bloque. El translateY(-50%) es
+          // el mismo que ya centra verticalmente al volverse "fixed" en CSS —
+          // se debe repetir aquí porque el estilo inline reemplaza el transform entero.
           const scale = (0.2 + 0.8 * glowProximity).toFixed(3);
-          section.content.style.opacity = glowProximity.toFixed(2);
-          section.content.style.transform = `translateY(-50%) scale(${scale})`;
-          section.content.style.pointerEvents = glowProximity > 0.4 ? "auto" : "none";
+          for (const content of section.contents) {
+            content.style.opacity = glowProximity.toFixed(2);
+            content.style.transform = `translateY(-50%) scale(${scale})`;
+            content.style.pointerEvents = glowProximity > 0.4 ? "auto" : "none";
+          }
         }
       }
 
