@@ -57,6 +57,7 @@ export const es = {
     heading: "+3 años construyendo backend",
     body: "Senior Backend en mi empresa actual — llegué como semi-senior y fui promovido en menos de un año. Antes lideré un equipo de backend con TypeScript y NestJS desde mis primeros meses de carrera, y sumé experiencia adicional con Python en otra compañía. Hoy construyo APIs robustas y pensadas para escalar, liderando decisiones técnicas de principio a fin.",
     epmMention: "Uno de esos proyectos incluyó trabajo directo con EPM como cliente.",
+    stageLabel: "ETAPA",
     stops: [
       {
         role: "NestJS + Líder de equipo",
@@ -82,7 +83,7 @@ export const es = {
   contact: {
     marker: "05 / CONTACTO",
     heading: "Hablemos",
-    body: "Estoy cómodo en mi rol actual, pero abierto a conversar sobre oportunidades interesantes, nuevos retos o simplemente intercambiar ideas.",
+    body: "Buscando mi siguiente reto. Si tienes un rol, un proyecto o simplemente quieres conectar, escríbeme.",
   },
   footer: {
     text: "Diseñado y construido por Mateo Ortiz López",

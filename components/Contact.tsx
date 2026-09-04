@@ -2,13 +2,14 @@
 
 import { useLocale } from "@/content/LocaleContext";
 import { CONTACT } from "@/lib/contact";
+import ContactDock from "./ContactDock";
 import RevealSection from "./RevealSection";
 
 export default function Contact() {
   const { t } = useLocale();
 
   return (
-    <RevealSection reverse={true} glow={3}>
+    <RevealSection reverse={true} glow={3} aux={<ContactDock />}>
       <div className="marker">{t.contact.marker}</div>
       <h2>{t.contact.heading}</h2>
       <p className="body-text">{t.contact.body}</p>

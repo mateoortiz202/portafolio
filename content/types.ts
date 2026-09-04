@@ -35,6 +35,9 @@ export interface Dictionary {
     heading: string;
     body: string;
     epmMention: string;
+    // Prefijo corto de cada placa ("ETAPA 01" / "STAGE 01") en el camino
+    // orbital (ver ExperiencePath.tsx).
+    stageLabel: string;
     // Las 3 etapas reales del camino interactivo (ver ExperiencePath.tsx),
     // en orden cronológico.
     stops: { role: string; duration: string; blurb: string }[];

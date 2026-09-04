@@ -688,221 +688,473 @@ p.body-text {
   opacity: 0.4;
 }
 
-/* Decoración de "Experiencia" (glow=2): numeral de fondo + camino
-   interactivo con las 3 etapas reales (ver ExperiencePath.tsx). */
-.exp-watermark {
-  position: absolute;
-  top: 50%;
-  left: -3vw;
-  transform: translateY(-54%);
-  font-family: var(--font-display);
-  font-weight: var(--display-weight);
-  font-size: clamp(120px, 14vw, 200px);
-  line-height: 1;
-  color: rgba(var(--accent-rgb), 0.07);
-  z-index: -1;
-  user-select: none;
-  pointer-events: none;
-}
-
-.path-area {
+/* Decoración de "Experiencia" (glow=2): a diferencia de las demás
+   secciones, esta ya no vive en la columna angosta compartida
+   (.sec-content/.sec-aux) — es de ancho completo, con la escena orbital
+   como protagonista y el texto anclado en una banda inferior centrada,
+   tipo póster. Ver .sec-content:has(.exp-stage) más abajo para el
+   override de layout. */
+/* Sin fondo ni overflow:hidden propios a propósito: a diferencia del
+   mockup aislado (que necesitaba su propio panel porque no había nada
+   detrás), aquí la escena flota sobre el canvas de Starfield.tsx que ya
+   cubre toda la página — igual que el resto de las secciones. Lo que
+   entra en foco al hacer scroll son los planetas/anillos/meteoritos en
+   sí, no un recuadro. Cada elemento hijo (.layer-bg, el propio <svg>) ya
+   recorta lo que necesita recortar por su cuenta. */
+.exp-stage {
   position: relative;
   width: 100%;
-  max-width: 440px;
-  aspect-ratio: 1 / 1.05;
 }
-.path-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
+.exp-svg { display: block; width: 100%; height: auto; }
+.layer-bg { position: absolute; inset: 0; overflow: hidden; }
 
-/* Sin línea en los tramos de aproximación/salida (fuera de cuadro): la nave
-   vuela por espacio vacío. Solo el camino "nuestro" (con las 3 paradas) es
-   un corredor de dos líneas punteadas con flujo animado — como las rutas de
-   vuelo de mapas de aerolíneas y los "hyperspace lanes" de sci-fi (Star
-   Wars, juegos espaciales), no una sola línea de UI. Degradado terracota
-   (pasado, el color de ambiente propio de esta sección) -> cian (presente). */
-.lane-line {
+.nebula { position: absolute; width: 46%; height: 70%; border-radius: 50%; filter: blur(60px); pointer-events: none; }
+.nebula-terra { left: -6%; top: 38%; background: radial-gradient(circle, rgba(226, 114, 91, 0.16), transparent 70%); }
+.nebula-mauve { left: 32%; top: 2%; background: radial-gradient(circle, rgba(181, 153, 168, 0.14), transparent 70%); }
+.nebula-cyan { left: 56%; top: 32%; background: radial-gradient(circle, rgba(125, 211, 252, 0.17), transparent 70%); }
+
+/* Anillos orbitales inclinados alrededor de cada etapa. transform-box:
+   fill-box + transform-origin:center anclan la rotación al centro real de
+   cada elipse (su cx,cy) — sin esto, una animación CSS de "transform" gira
+   alrededor del origen del viewBox completo y el anillo se aleja del
+   planeta apenas arranca. La inclinación fija de cada uno vive horneada en
+   su propio keyframe, porque una animación de "transform" reemplaza por
+   completo cualquier atributo `transform` del SVG (no se combinan). */
+.orbit {
   fill: none;
-  stroke: url(#pathGrad);
-  stroke-width: 0.9;
-  stroke-linecap: round;
-  stroke-dasharray: 2.2 1.8;
-  animation: lane-flow 1.4s linear infinite;
+  stroke-width: 1;
+  opacity: 0.55;
+  transform-box: fill-box;
+  transform-origin: center;
 }
-@keyframes lane-flow {
-  to { stroke-dashoffset: -4; }
+.orbit-a { animation: orbit-spin-a 90s linear infinite; }
+.orbit-b { animation: orbit-spin-b 120s linear infinite; }
+.orbit-c { animation: orbit-spin-c 100s linear infinite; }
+@keyframes orbit-spin-a { from { transform: rotate(-10deg); } to { transform: rotate(350deg); } }
+@keyframes orbit-spin-b { from { transform: rotate(8deg); } to { transform: rotate(-352deg); } }
+@keyframes orbit-spin-c { from { transform: rotate(-6deg); } to { transform: rotate(354deg); } }
+
+/* Trayectoria de transferencia entre las 3 etapas — degradado terracota
+   (pasado) -> cian (presente), con marcas de corrección de rumbo. El color
+   se fija con el atributo `stroke` en el propio SVG (ver ExperiencePath.tsx). */
+.transfer-line-glow {
+  fill: none;
+  stroke-width: 6;
+  opacity: 0.3;
+  filter: blur(3px);
+}
+.transfer-line {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-dasharray: 3 3;
+  animation: transfer-flow 3.2s linear infinite;
+  filter: drop-shadow(0 0 2px rgba(125, 211, 252, 0.6));
+}
+@keyframes transfer-flow {
+  to { stroke-dashoffset: -90; }
+}
+.burn-marks line {
+  stroke: #eef1fa;
+  opacity: 0.55;
+  stroke-width: 1;
 }
 
-/* La nave: un "dart" que apunta en su dirección de viaje (offset-rotate:
-   auto usa el eje +x local como el frente), con una estela detrás.
-   El giro brusco al entrar/salir del camino era un problema real de
-   geometría: las curvas de aproximación/salida no compartían tangente con
-   el camino principal en el punto de unión (discontinuidad C1), así que se
-   sentía como un quiebre mecánico. Los puntos de control de aquí están
-   calculados como el reflejo exacto del control del otro lado de cada
-   unión, para que la dirección de viaje sea continua (sin esquina). */
-.ship {
-  offset-path: path("M-20,135 C-8,118 0,102 8,96 C16,90 22,84 28,78 C34,73 42,70 48,66 C54,58 60,50 66,40 C72,30 84,16 96,0 C108,-16 122,-32 136,-48");
-  offset-rotate: auto;
-  animation: travel 9s linear infinite;
+/* Meteoritos ambientales: cruzan de vez en cuando, con una estela que marca
+   su velocidad y un tumbo lento e independiente de su dirección de viaje. */
+.rock {
+  fill: #3a3742;
+  stroke: rgba(238, 241, 250, 0.16);
+  stroke-width: 0.4;
+  opacity: 0.75;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rock-tumble linear infinite;
 }
-.ship-trail { fill: url(#trailFade); }
-.ship-body { fill: var(--accent); filter: drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.85)); }
-
-/* El camino termina justo en el nodo 3 (rol actual) — la salida rápida
-   arranca inmediatamente después del último punto, sin tramo muerto. % de
-   tiempo/distancia calculados sobre la longitud real de la curva: la
-   aproximación cubre 19.85% de la distancia en solo 8% del tiempo, el
-   camino con historia cubre 33.77% en 80% del tiempo (ritmo pausado), y la
-   salida cubre 46.38% en 12% — con easing "expo" para que el frenado y el
-   arranque se sientan de verdad, no un cambio brusco de velocidad. */
-@keyframes travel {
-  0% { offset-distance: 0%; opacity: 0; animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
-  3% { opacity: 1; }
-  8% { offset-distance: 19.85%; animation-timing-function: linear; }
-  88% { offset-distance: 53.62%; animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  97% { opacity: 1; }
-  100% { offset-distance: 100%; opacity: 0; }
+.meteor-1 .rock { animation-duration: 8s; }
+.meteor-2 .rock { animation-duration: 12s; animation-direction: reverse; }
+.meteor-3 .rock { animation-duration: 6.5s; }
+@keyframes rock-tumble {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
+.meteor-trail { stroke-width: 1.5; stroke-linecap: round; }
 
-.stop {
+.moon { fill: #eef1fa; opacity: 0.75; }
+
+/* La sonda viaja por la misma curva que enlaza las 3 etapas, con una
+   estela detrás — el equivalente al "ship" del diseño anterior, ahora
+   dentro del lenguaje visual orbital. */
+/* El movimiento vive solo en el <animateMotion> (SMIL) dentro de
+   ExperiencePath.tsx, siguiendo el mismo TRANSFER_PATH que dibuja la
+   línea — antes había además una animación CSS de offset-path moviendo
+   el mismo elemento por el mismo camino, y las dos se combinaban,
+   dejando a la nave lejos de la trayectoria real y con un rumbo
+   incorrecto. Aquí solo queda el estilo, no el movimiento. */
+.probe-trail { fill: rgba(125, 211, 252, 0.3); }
+.probe-body { fill: #7dd3fc; filter: drop-shadow(0 0 5px rgba(125, 211, 252, 0.85)); }
+
+/* Estrellas fugaces: la mayor parte de cada ciclo están invisibles y en
+   reposo; "disparan" solo en el primer tramo, para que aparezcan de vez en
+   cuando y no todo el tiempo. */
+.shootingstar {
   position: absolute;
-  width: 46px;
-  height: 46px;
-  margin-left: -23px;
-  margin-top: -23px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.stop-dot {
+  width: 2px;
+  height: 2px;
   border-radius: 50%;
-  background: var(--accent);
-  transition: transform 0.5s cubic-bezier(0.45, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.45, 0, 0.2, 1);
+  background: #fff;
+  opacity: 0;
+  box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.9);
 }
-.stop-1 .stop-dot {
-  width: 10px;
-  height: 10px;
-  background: rgba(226, 114, 91, 0.75);
-  box-shadow: 0 0 8px rgba(226, 114, 91, 0.4);
-  animation: node-flash-1 9s infinite;
-}
-/* Etapa de Python: discreta a propósito (no debe definir el currículum),
-   pero no invisible — tamaño/opacidad/brillo subidos tras feedback. */
-.stop-2 .stop-dot {
-  width: 9px;
-  height: 9px;
-  background: rgba(205, 170, 150, 0.72);
-  box-shadow: 0 0 6px rgba(205, 170, 150, 0.35);
-  animation: node-flash-2 9s infinite;
-}
-.stop-3 .stop-dot {
-  width: 13px;
-  height: 13px;
-  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.6);
-  animation:
-    pulse-current 2.4s ease-in-out infinite,
-    node-flash-3 9s infinite;
-}
-@keyframes pulse-current {
-  0%, 100% { box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.6); }
-  50% { box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.95); }
-}
-.stop:hover .stop-dot { transform: scale(1.6); }
-
-/* Destello justo cuando la nave cruza cada punto — los tiempos (3.09s /
-   5.14s / 7.92s de los 9s del ciclo) se calcularon convirtiendo el % de
-   distancia de cada nodo a tiempo real, usando el mismo mapa de velocidad
-   de @keyframes travel (no a ojo, si no quedaría desincronizado). */
-@keyframes node-flash-1 {
-  0%, 32%, 41%, 100% { transform: scale(1); filter: brightness(1); }
-  34.3% { transform: scale(2.1); filter: brightness(2.4); }
-}
-@keyframes node-flash-2 {
-  0%, 55%, 64%, 100% { transform: scale(1); filter: brightness(1); }
-  57.1% { transform: scale(2.1); filter: brightness(2.4); }
-}
-@keyframes node-flash-3 {
-  0%, 86%, 94%, 100% { transform: scale(1); filter: brightness(1); }
-  88% { transform: scale(1.7); filter: brightness(2.2); }
-}
-
-/* Anillo tipo mira/waypoint detrás de cada punto — sin esto se perdían
-   contra el propio color del camino. Un solo anillo para las etapas
-   cerradas (1 y 2); el rol actual (3) lleva un segundo anillo, tipo radar,
-   para distinguirlo como "estás aquí" en vez de solo "más grande". */
-.stop-ring {
+.shootingstar::before {
+  content: "";
   position: absolute;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 1px solid;
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.45, 0, 0.2, 1);
+  right: 100%;
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.85), transparent);
+  transform: translateY(-50%);
 }
-.stop-1 .stop-ring { width: 24px; height: 24px; border-color: rgba(226, 114, 91, 0.45); opacity: 0.7; }
-.stop-2 .stop-ring { width: 20px; height: 20px; border-color: rgba(205, 170, 150, 0.5); opacity: 0.7; }
-.stop-3 .stop-ring { width: 30px; height: 30px; border-color: rgba(var(--accent-rgb), 0.55); opacity: 0.8; }
-.stop-3 .stop-ring-outer {
-  width: 42px;
-  height: 42px;
-  border-color: rgba(var(--accent-rgb), 0.25);
-  opacity: 0.6;
-  animation: radar-ring 2.4s ease-out infinite;
+.shootingstar-1 { top: 10%; left: 8%; animation: shoot-1 9s linear infinite; animation-delay: 1.2s; }
+.shootingstar-2 { top: 64%; left: 70%; animation: shoot-2 13s linear infinite; animation-delay: 5.5s; }
+.shootingstar-3 { top: 20%; left: 55%; animation: shoot-3 16.5s linear infinite; animation-delay: 9s; }
+@keyframes shoot-1 {
+  0% { transform: translate(0, 0) rotate(19deg); opacity: 0; }
+  2% { opacity: 1; }
+  12% { transform: translate(300px, 104px) rotate(19deg); opacity: 0; }
+  100% { transform: translate(300px, 104px) rotate(19deg); opacity: 0; }
 }
-@keyframes radar-ring {
-  0% { transform: translate(-50%, -50%) scale(0.75); opacity: 0.55; }
-  100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0; }
+@keyframes shoot-2 {
+  0% { transform: translate(0, 0) rotate(161deg); opacity: 0; }
+  2% { opacity: 1; }
+  10% { transform: translate(-260px, 90px) rotate(161deg); opacity: 0; }
+  100% { transform: translate(-260px, 90px) rotate(161deg); opacity: 0; }
 }
-.stop:hover .stop-ring { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+@keyframes shoot-3 {
+  0% { transform: translate(0, 0) rotate(24deg); opacity: 0; }
+  2% { opacity: 1; }
+  13% { transform: translate(240px, 110px) rotate(24deg); opacity: 0; }
+  100% { transform: translate(240px, 110px) rotate(24deg); opacity: 0; }
+}
 
-.stop-card {
+/* Easter egg: cada ~46s, un meteorito impacta la etapa intermedia (la más
+   discreta). Un solo "reloj maestro" (mismo begin+dur) sincroniza al
+   meteorito, el destello, la onda expansiva y las chispas. */
+.rock-impactor { animation: none; }
+.impactor { opacity: 0; animation: impactor-visibility 46s linear infinite; animation-delay: 2s; }
+@keyframes impactor-visibility {
+  0%, 0.9% { opacity: 0; }
+  1.3% { opacity: 1; }
+  5.9% { opacity: 1; }
+  6.4% { opacity: 0; }
+  100% { opacity: 0; }
+}
+.impact-ring { fill: none; stroke: #fff; stroke-width: 1; opacity: 0; animation: impact-ring 46s linear infinite; animation-delay: 2s; }
+@keyframes impact-ring {
+  0%, 5.8% { r: 2; opacity: 0; }
+  6.2% { r: 4; opacity: 0.8; }
+  8.5% { r: 24; opacity: 0; }
+  100% { opacity: 0; }
+}
+.impact-flash { fill: #fff; opacity: 0; filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9)); animation: impact-flash 46s linear infinite; animation-delay: 2s; }
+@keyframes impact-flash {
+  0%, 5.8% { r: 2; opacity: 0; }
+  6.2% { r: 10; opacity: 1; }
+  7.5% { r: 15; opacity: 0; }
+  100% { opacity: 0; }
+}
+.impact-spark { stroke: #fff; stroke-width: 1; stroke-linecap: round; opacity: 0; animation: impact-spark 46s linear infinite; animation-delay: 2s; }
+@keyframes impact-spark {
+  0%, 5.9% { opacity: 0; }
+  6.3% { opacity: 0.9; }
+  8% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Placas de cada etapa: siempre visibles, ancladas justo ARRIBA de su
+   planeta (no al costado) — así el cuerpo del planeta queda despejado y
+   la placa no compite con el texto principal, que vive más abajo. La
+   línea guía baja desde el borde inferior de la placa hasta el planeta. */
+.plaque {
   position: absolute;
-  width: 190px;
-  padding: 12px 14px;
-  background: rgba(8, 10, 16, 0.92);
-  border: 1px solid rgba(var(--accent-rgb), 0.3);
-  border-radius: 6px;
-  opacity: 0;
-  transform: scale(0.85);
-  transform-origin: var(--card-origin, center);
-  transition: opacity 0.35s cubic-bezier(0.45, 0, 0.2, 1), transform 0.35s cubic-bezier(0.45, 0, 0.2, 1);
+  width: 200px;
+  padding: 11px 13px 12px;
+  background: rgba(9, 11, 17, 0.68);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border-top: 1px solid var(--accent, #7dd3fc);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transform: translate(-50%, -100%);
+}
+.plaque::before, .plaque::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--accent, #7dd3fc);
+  opacity: 0.9;
+}
+.plaque::before { left: -1px; top: -1px; border-right: none; border-bottom: none; }
+.plaque::after { right: -1px; bottom: -1px; border-left: none; border-top: none; }
+.plaque-k { font-family: var(--font-label); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent, #7dd3fc); margin-bottom: 5px; }
+.plaque-role { font-family: var(--font-display); font-weight: var(--display-weight); text-transform: uppercase; letter-spacing: 0.01em; font-size: 13px; color: #eef1fa; margin-bottom: 3px; }
+.plaque-dur { font-family: var(--font-label); font-size: 10.5px; color: #97a0b8; display: block; margin-bottom: 6px; }
+.plaque-desc { font-size: 12px; color: #97a0b8; line-height: 1.4; }
+
+.leader {
+  position: absolute;
+  width: 1px;
+  background: rgba(238, 241, 250, 0.25);
+  transform: translateX(-50%);
+}
+
+/* Texto de la sección: banda inferior, centrado, tipo póster — cae en el
+   espacio que ya queda libre por debajo de las placas. */
+.exp-copy {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  transform: translateX(-50%);
+  width: min(600px, 88%);
+  text-align: center;
+  z-index: 6;
+}
+.exp-copy::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -14%;
+  transform: translateX(-50%);
+  width: 160%;
+  height: 220%;
+  background: radial-gradient(ellipse 60% 100% at 50% 100%, rgba(5, 6, 10, 0.88), transparent 72%);
+  z-index: -1;
   pointer-events: none;
-  z-index: 5;
 }
-.stop:hover .stop-card { opacity: 1; transform: scale(1); }
-.stop-role {
-  font-family: var(--font-display);
-  font-weight: var(--display-weight);
-  font-size: 14px;
-  color: #f8fafc;
-  margin-bottom: 3px;
-  line-height: 1.25;
-}
-.stop-duration {
+.exp-marker {
   font-family: var(--font-label);
-  font-size: 10px;
-  letter-spacing: 1px;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 6px;
+  opacity: 0.9;
+  margin-bottom: 10px;
 }
-.stop-blurb { font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+.exp-heading {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  text-transform: uppercase;
+  font-size: clamp(22px, 2.6vw, 34px);
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  text-wrap: balance;
+  color: #eef1fa;
+}
+.exp-body {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #97a0b8;
+  margin: 0 auto;
+}
 
-.stop-1 .stop-card { left: 46px; top: -10px; --card-origin: left center; }
-.stop-2 .stop-card { left: -206px; top: -10px; --card-origin: right center; }
-.stop-3 .stop-card { left: 46px; top: -30px; --card-origin: left center; }
+/* Decoración de "Hablemos" (ver ContactDock.tsx): estación de acople con
+   anillo técnico giratorio, animada según un solo ciclo de acople
+   (--dock-cycle) — nave que se acerca, luces de espera ámbar→verde, y un
+   pulso de energía que recorre el anillo hasta el hub justo cuando
+   conecta. Sin fondo propio, por la misma razón que .exp-stage más
+   arriba: flota sobre el canvas de Starfield.tsx. */
+.dock-area {
+  --dock-cycle: 9s;
+  --dock-truss: #282d3a;
+  --dock-hull: #12141c;
+  --dock-hull-2: #181b25;
+  --dock-bg-2: #0b0e15;
+  --dock-amber: #f0b46a;
+  --dock-green: #8ff2bd;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+}
+.dock-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+.dock-stars-far { animation: dock-drift-far 22s ease-in-out infinite alternate; }
+.dock-stars-near { animation: dock-drift-near 16s ease-in-out infinite alternate; }
+@keyframes dock-drift-far { from { transform: translate(0, 0); } to { transform: translate(-4px, 3px); } }
+@keyframes dock-drift-near { from { transform: translate(0, 0); } to { transform: translate(6px, -4px); } }
+
+.dock-planet { animation: dock-planet-glow 9s ease-in-out infinite; }
+@keyframes dock-planet-glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.7; } }
+
+.dock-transfer-path { animation: dock-dash-drift 5s linear infinite; }
+@keyframes dock-dash-drift { to { stroke-dashoffset: -40; } }
+
+.dock-ring-spin {
+  transform-origin: 200px 200px;
+  animation: dock-ring-spin 26s linear infinite;
+}
+@keyframes dock-ring-spin { to { transform: rotate(360deg); } }
+
+/* Quietas (ámbar fijo) hasta que la nave entra al anillo (~16% del ciclo
+   con la curva de acercamiento actual — ver .dock-ship-mover), recién ahí
+   empieza el parpadeo de espera. */
+.dock-light { animation: dock-light-cycle var(--dock-cycle) infinite; }
+@keyframes dock-light-cycle {
+  0% { fill: var(--dock-amber); opacity: 1; }
+  19% { opacity: 1; }
+  24% { opacity: 0.3; }
+  29% { opacity: 1; }
+  34% { opacity: 0.3; }
+  39% { opacity: 1; }
+  42% { opacity: 0.3; }
+  45% { fill: var(--dock-amber); opacity: 1; }
+  59% { fill: var(--dock-amber); opacity: 1; }
+  62% { fill: var(--dock-green); opacity: 1; }
+  100% { fill: var(--dock-green); opacity: 1; }
+}
+
+.dock-flash {
+  animation: dock-flash-pulse var(--dock-cycle) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes dock-flash-pulse {
+  0%, 54% { opacity: 0; transform: scale(0.3); }
+  58% { opacity: 1; transform: scale(1.5); }
+  68% { opacity: 0; transform: scale(2); }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+/* Pulso de energía: recorre medio anillo y baja por el puntal superior
+   hasta el hub, llegando justo cuando dispara el flash de conexión (58%
+   del ciclo) — todo el anillo "se activa" con el acople, no solo las
+   luces locales. Dos tramos independientes (órbita + descenso radial) en
+   vez de un solo path compuesto, para no mezclar dos mecanismos de
+   movimiento en un mismo elemento. */
+/* Cada medio anillo se arma con DOS arcos de 90° en vez de uno de 180°:
+   cuando el punto de inicio y fin de un arco quedan exactamente opuestos
+   en el círculo (como aquí, extremo a extremo del diámetro), el
+   large-arc-flag queda ambiguo — el navegador tiene que resolver un caso
+   límite en vez de uno bien definido, y eso se notaba como que los dos
+   pulsos no arrancaban a la par pese a tener el mismo timing. Con dos
+   arcos de 90° (nunca ambiguos) el resultado visual es idéntico pero la
+   interpolación de offset-distance queda inequívoca en ambos lados. */
+.dock-pulse-orbit {
+  offset-path: path("M200,310 A110,110 0 0 0 310,200 A110,110 0 0 0 200,90");
+  animation: dock-pulse-orbit var(--dock-cycle) linear infinite;
+}
+.dock-pulse-orbit-b {
+  offset-path: path("M200,310 A110,110 0 0 1 90,200 A110,110 0 0 1 200,90");
+  animation: dock-pulse-orbit var(--dock-cycle) linear infinite;
+}
+@keyframes dock-pulse-orbit {
+  0%, 29% { offset-distance: 0%; opacity: 0; }
+  31% { opacity: 1; }
+  55% { offset-distance: 100%; opacity: 1; }
+  57% { opacity: 0; }
+  100% { opacity: 0; }
+}
+.dock-pulse-radial {
+  offset-path: path("M200,90 L200,164");
+  animation: dock-pulse-radial var(--dock-cycle) linear infinite;
+}
+@keyframes dock-pulse-radial {
+  0%, 54% { offset-distance: 0%; opacity: 0; }
+  56% { opacity: 1; }
+  58% { offset-distance: 100%; opacity: 1; }
+  60% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Micrometeorito de fondo: cruza de vez en cuando con su propio ciclo
+   largo, independiente del acople — igual que en Experiencia. */
+.dock-meteor {
+  offset-path: path("M -20 70 L 420 300");
+  animation: dock-meteor-travel 19s linear infinite;
+}
+@keyframes dock-meteor-travel {
+  0%, 3% { offset-distance: 0%; opacity: 0; }
+  6% { opacity: 0.55; }
+  94% { opacity: 0.55; }
+  97%, 100% { offset-distance: 100%; opacity: 0; }
+}
+.dock-meteor-body {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dock-meteor-tumble 5s linear infinite;
+}
+@keyframes dock-meteor-tumble { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Un solo tramo con easing continuo (en vez de dos tramos con timing-function
+   por defecto -ease-, que frenaba en seco al final del primer tramo y
+   volvía a acelerar desde cero en el segundo, leyéndose como un
+   tropiezo). "ease-out" desacelera de forma continua hasta detenerse
+   justo al llegar, sin el quiebre de velocidad intermedio. */
+.dock-ship-mover { offset-rotate: auto; animation: dock-ship-travel var(--dock-cycle) ease-out infinite; }
+@keyframes dock-ship-travel {
+  0% { offset-distance: 0%; }
+  52% { offset-distance: 100%; }
+  100% { offset-distance: 100%; }
+}
+.dock-approach-scale {
+  animation: dock-approach-scale var(--dock-cycle) ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes dock-approach-scale {
+  0% { transform: scale(0.55); }
+  52% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+/* Al llegar (52%, ver .dock-ship-mover), la nave se asienta con un
+   pequeño rebote físico y apaga la estela — motores cortados, nave en
+   reposo hasta el próximo ciclo. */
+.dock-ship-settle {
+  animation: dock-ship-settle var(--dock-cycle) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes dock-ship-settle {
+  0%, 52% { transform: scale(1, 1) translateY(0); }
+  54% { transform: scale(1.1, 0.9) translateY(1.2px); }
+  57% { transform: scale(0.96, 1.04) translateY(-0.5px); }
+  61%, 100% { transform: scale(1, 1) translateY(0); }
+}
+.dock-ship-trail {
+  animation: dock-ship-trail-fade var(--dock-cycle) infinite;
+}
+@keyframes dock-ship-trail-fade {
+  0%, 52% { opacity: 1; }
+  57% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* La sección de Experiencia ya no vive en la columna angosta: ocupa el
+   ancho completo (hasta un máximo), centrada, en vez de anclarse a un
+   lado como el resto de secciones .sec-split. */
+.sec-content:has(.exp-stage) {
+  max-width: 1400px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sec-content:has(.exp-stage) {
+    left: 4vw !important;
+    right: 4vw !important;
+    margin: 0 auto !important;
+  }
+}
 
 @media (max-width: 768px) {
-  .exp-watermark {
-    left: 0;
-    opacity: 0.8;
+  .plaque, .leader { position: static; transform: none; width: auto; margin: 8px 16px; }
+  .plaque::before, .plaque::after { display: none; }
+  .leader { display: none; }
+  .exp-copy {
+    position: static;
+    transform: none;
+    width: auto;
+    margin: 20px 20px 0;
+    text-align: left;
   }
+  .exp-copy::before { display: none; }
 }
 
 /*
@@ -952,6 +1204,17 @@ section.sec-split {
    definido en el padre, esos % colapsan todos hacia 0,0). */
 .sec-aux {
   width: 100%;
+}
+/* El camino de Experiencia se sentía pequeño/lejano dentro del límite
+   compartido con la frase-tesis/constelación — le damos más espacio solo a
+   él, sin afectar a About/Stack. */
+.sec-aux:has(.path-area) {
+  max-width: 600px;
+}
+/* La escena de acople necesita más espacio del límite compartido con
+   About/Stack para que el anillo se lea con detalle. */
+.sec-aux:has(.dock-area) {
+  max-width: 700px;
 }
 
 /*
