@@ -88,6 +88,10 @@ section.sec {
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  /* dvh sigue el viewport visual real en móvil (la barra de direcciones
+     aparece/desaparece); en escritorio equivale a 100vh, así que esta
+     declaración no cambia nada ahí — solo es fallback + mejora móvil. */
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -263,6 +267,12 @@ p.body-text {
 .tile-icon {
   width: 28px;
   height: 28px;
+}
+@media (max-width: 768px) {
+  .tile-icon {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1135,7 +1145,7 @@ p.body-text {
 .sec-content:has(.exp-stage) {
   max-width: 1400px;
 }
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (min-width: 769px) {
   .sec-content:has(.exp-stage) {
     left: 4vw !important;
     right: 4vw !important;
@@ -1226,7 +1236,15 @@ section.sec-split {
   Se respeta prefers-reduced-motion dejándolo en flujo normal (una sección
   legible a la vez, sin depender de que JS la posicione).
 */
-@media (prefers-reduced-motion: no-preference) {
+/* El truco de "fijar en pantalla mientras se desvanece" solo corre en
+   escritorio (min-width:769px) — ver Starfield.tsx (skipReveal): en móvil
+   asume lo mismo que prefers-reduced-motion, contenido en flujo normal, sin
+   fijado. No tenía sentido forzar contenido de altura variable (Stack con
+   descripciones, Experiencia con 3 tarjetas) dentro de una sola pantalla
+   fija — terminaba en un scroll anidado dentro del bloque fijo, incómodo en
+   táctil. Ver más abajo el bloque @media(max-width:768px) con el layout de
+   flujo normal equivalente. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 769px) {
   .sec-content,
   .sec-aux {
     position: fixed;
@@ -1250,30 +1268,19 @@ section.sec-split {
   .sec-split.reverse .sec-aux {
     left: 8vw;
   }
-
-  @media (max-width: 768px) {
-    .sec-split:not(.reverse) .sec-content,
-    .sec-split.reverse .sec-content {
-      left: 6vw;
-      right: 6vw;
-    }
-    /* El bloque auxiliar (frase-tesis) se oculta en móvil: no cabe junto al
-       contenido principal sin competir por el mismo espacio angosto. */
-    .sec-aux {
-      display: none;
-    }
-  }
 }
 
 .warp-zone {
   position: relative;
   height: 180vh;
+  height: 180dvh;
   z-index: 1;
 }
 .warp-zone .pin {
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1290,7 +1297,12 @@ section.sec-split {
 
 footer {
   position: relative;
-  z-index: 1;
+  /* Por encima de .sec-content/.sec-aux (z-index:2, position:fixed) — en
+     escritorio nunca se solapan (el footer está centrado, el contenido fijo
+     vive a un lado), pero en móvil el contenido fijo ocupa casi todo el
+     ancho, y si su fundido de salida no terminó justo cuando el footer
+     entra en pantalla, quedaba tapado por los links de Contacto. */
+  z-index: 3;
   text-align: center;
   padding: 60px 0 100px;
   color: #64748b;
@@ -1341,16 +1353,44 @@ footer {
   section.sec {
     padding: 0 6vw;
   }
+  /* Sin fijado en pantalla (ver Starfield.tsx: skipReveal), así que aquí
+     .sec-split vuelve a ser un simple layout de una columna: el contenido
+     principal y (si existe) el auxiliar se apilan en flujo normal, cada
+     sección crece lo que necesite y la página se scrollea de corrido. */
   section.sec-split {
-    padding: 0 6vw;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 90px 6vw 60px;
+    gap: 28px;
   }
-  .sec-content {
+  .sec-content,
+  .sec-aux {
+    position: static;
     max-width: 100%;
+    width: 100%;
+    margin: 0 !important;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
   }
   .sec-split:not(.reverse) .sec-content,
   .sec-split.reverse .sec-content {
     margin-left: 0;
     margin-right: 0;
+  }
+  /* El bloque auxiliar (frase-tesis, constelación) se oculta en móvil: no
+     cabe junto al contenido principal sin competir por el mismo espacio
+     angosto, y ahí es solo decoración secundaria. La escena de acople de
+     Contacto es la excepción — es la pieza central de la sección, no un
+     adorno — así que en vez de ocultarla se muestra primero, arriba del
+     texto (order:-1 no depende del orden real en el DOM). */
+  .sec-aux {
+    display: none;
+  }
+  .sec-aux:has(.dock-area) {
+    display: block;
+    order: -1;
   }
 }
 

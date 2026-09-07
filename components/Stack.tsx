@@ -27,6 +27,10 @@ export default function Stack() {
           <div className={`${styles.stackTile} tile-${i + 1}`} key={item}>
             <TechIcon name={item} />
             {item.toUpperCase()}
+            {/* Solo visible en móvil (ver Stack.module.css) — en escritorio esta
+                descripción se revela al pasar el mouse sobre la constelación
+                (StackConstellation.tsx), que en móvil queda oculta. */}
+            <span className={styles.stackDesc}>{t.stack.descriptions[i]}</span>
           </div>
         ))}
       </div>

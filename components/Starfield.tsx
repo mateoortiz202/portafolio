@@ -113,6 +113,13 @@ export default function Starfield() {
     if (!ctx) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // El truco de "fijar la sección en pantalla mientras se desvanece" asume
+    // que el contenido siempre cabe en una sola pantalla — en móvil no
+    // siempre es cierto (Stack/Experiencia con todo su contenido), y forzarlo
+    // ahí terminaba en un scroll anidado dentro del bloque fijo, incómodo en
+    // táctil. En móvil se trata igual que reducedMotion: el contenido queda
+    // en flujo normal, visible de una vez, sin el efecto de fijado/escala.
+    const skipReveal = reducedMotion || window.innerWidth < MOBILE_BREAKPOINT;
     const accentRgb =
       getComputedStyle(document.documentElement).getPropertyValue("--accent-rgb").trim() ||
       "125,211,252";
@@ -169,7 +176,7 @@ export default function Starfield() {
 
     // Sin animación: el contenido queda visible de una vez (en flujo normal,
     // ver el media query prefers-reduced-motion en globals.css), sin depender del scroll.
-    if (reducedMotion) {
+    if (skipReveal) {
       for (const section of glowSections) {
         for (const content of section.contents) {
           content.style.opacity = "1";
@@ -199,7 +206,20 @@ export default function Starfield() {
       const sectionCenter = rect.top + rect.height / 2;
       const viewportCenter = H / 2;
       const dist = Math.abs(sectionCenter - viewportCenter);
-      const raw = Math.max(0, Math.min(1, 1 - dist / (H * 0.9)));
+      // El footer es más corto que una pantalla completa, así que después de
+      // la última sección no siempre queda suficiente recorrido de scroll
+      // para que su fundido llegue a 0 antes de tocar el final real de la
+      // página — sin este ajuste, esa sección se quedaba "enganchada" en
+      // foco (panel fijo aún visible) incluso en el fondo, solapando el
+      // footer. Se limita la distancia de referencia a lo que realmente
+      // queda de scroll bajo esta sección, para que el fundido siempre
+      // termine de llegar a 0 exactamente cuando ya no hay más página.
+      const maxScrollY = Math.max(0, document.documentElement.scrollHeight - H);
+      const viewportCenterAtMaxScroll = maxScrollY + H / 2;
+      const sectionCenterDoc = sectionCenter + window.scrollY;
+      const distAtMaxScroll = Math.abs(sectionCenterDoc - viewportCenterAtMaxScroll);
+      const maxDist = Math.min(H * 0.9, Math.max(1, distAtMaxScroll));
+      const raw = Math.max(0, Math.min(1, 1 - dist / maxDist));
       return raw * raw * (3 - 2 * raw);
     }
 
@@ -339,6 +359,12 @@ export default function Starfield() {
               SECTION_GLOW_COLORS[section.colorIndex],
             );
           }
+
+          // En móvil (skipReveal) el contenido queda en flujo normal — no se
+          // le toca opacity/transform, eso lo maneja el CSS. El glow de fondo
+          // de arriba sí se mantiene, es puramente decorativo y no depende
+          // de si el bloque está fijo o no.
+          if (skipReveal) continue;
 
           // Cada contenedor de la sección (el principal y el auxiliar, si
           // existe) crece/se desvanece como un bloque. El translateY(-50%) es
