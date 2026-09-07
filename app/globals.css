@@ -1165,6 +1165,19 @@ p.body-text {
     text-align: left;
   }
   .exp-copy::before { display: none; }
+  /* Rendimiento en móvil: la escena tenía 15 animateMotion (SMIL) corriendo
+     a la vez entre lunas, meteoritos y el easter egg — de sobra para
+     generar jank en un celular de gama media, sobre todo ahora que esta
+     sección ya no queda oculta/pausada la mayor parte del tiempo (ver
+     skipReveal en Starfield.tsx). Se recorta lo puramente ambiental: la
+     sonda (protagonista) y 3 lunas se quedan, el resto se apaga. */
+  .moon-extra,
+  .meteor-2,
+  .meteor-3,
+  .impactor,
+  .impact-fx {
+    display: none;
+  }
 }
 
 /*

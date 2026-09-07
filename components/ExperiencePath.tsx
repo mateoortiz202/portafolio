@@ -150,12 +150,15 @@ export default function ExperiencePath({ marker, heading, body, stageLabel, stop
           <animateMotion path="M-40,540 L1240,140" dur="21s" begin="-9s" repeatCount="indefinite" />
         </g>
 
-        {/* lunas: mitad lejana (detrás del planeta) */}
+        {/* lunas: mitad lejana (detrás del planeta) — moon-extra (4 y 5) se
+            oculta en móvil junto con los meteoritos/easter-egg de más abajo,
+            ver globals.css: eran varios animateMotion (SMIL) corriendo a la
+            vez y generaban jank en celulares de gama media. */}
         <g clipPath="url(#moon1-back)"><circle className="moon" r="3.4"><animateMotion dur="7s" repeatCount="indefinite" path="M260,430 A50,18 0 1 1 160,430 A50,18 0 1 1 260,430" /></circle></g>
         <g clipPath="url(#moon2-back)"><circle className="moon" r="2.6" style={{ opacity: 0.6 }}><animateMotion dur="11s" repeatCount="indefinite" path="M275,430 A65,25 0 1 1 145,430 A65,25 0 1 1 275,430" /></circle></g>
         <g clipPath="url(#moon3-back)"><circle className="moon" r="3"><animateMotion dur="9s" repeatCount="indefinite" path="M657,230 A47,21 0 1 1 563,230 A47,21 0 1 1 657,230" /></circle></g>
-        <g clipPath="url(#moon4-back)"><circle className="moon" r="3.8"><animateMotion dur="6.4s" repeatCount="indefinite" path="M1052,380 A52,17 0 1 1 948,380 A52,17 0 1 1 1052,380" /></circle></g>
-        <g clipPath="url(#moon5-back)"><circle className="moon" r="2.4" style={{ opacity: 0.55 }}><animateMotion dur="13s" repeatCount="indefinite" path="M1070,380 A70,26 0 1 1 930,380 A70,26 0 1 1 1070,380" /></circle></g>
+        <g className="moon-extra" clipPath="url(#moon4-back)"><circle className="moon" r="3.8"><animateMotion dur="6.4s" repeatCount="indefinite" path="M1052,380 A52,17 0 1 1 948,380 A52,17 0 1 1 1052,380" /></circle></g>
+        <g className="moon-extra" clipPath="url(#moon5-back)"><circle className="moon" r="2.4" style={{ opacity: 0.55 }}><animateMotion dur="13s" repeatCount="indefinite" path="M1070,380 A70,26 0 1 1 930,380 A70,26 0 1 1 1070,380" /></circle></g>
 
         {/* planetas */}
         {PLANETS.map((p) => (
@@ -197,8 +200,8 @@ export default function ExperiencePath({ marker, heading, body, stageLabel, stop
         <g clipPath="url(#moon1-front)"><circle className="moon" r="3.4"><animateMotion dur="7s" repeatCount="indefinite" path="M260,430 A50,18 0 1 1 160,430 A50,18 0 1 1 260,430" /></circle></g>
         <g clipPath="url(#moon2-front)"><circle className="moon" r="2.6" style={{ opacity: 0.6 }}><animateMotion dur="11s" repeatCount="indefinite" path="M275,430 A65,25 0 1 1 145,430 A65,25 0 1 1 275,430" /></circle></g>
         <g clipPath="url(#moon3-front)"><circle className="moon" r="3"><animateMotion dur="9s" repeatCount="indefinite" path="M657,230 A47,21 0 1 1 563,230 A47,21 0 1 1 657,230" /></circle></g>
-        <g clipPath="url(#moon4-front)"><circle className="moon" r="3.8"><animateMotion dur="6.4s" repeatCount="indefinite" path="M1052,380 A52,17 0 1 1 948,380 A52,17 0 1 1 1052,380" /></circle></g>
-        <g clipPath="url(#moon5-front)"><circle className="moon" r="2.4" style={{ opacity: 0.55 }}><animateMotion dur="13s" repeatCount="indefinite" path="M1070,380 A70,26 0 1 1 930,380 A70,26 0 1 1 1070,380" /></circle></g>
+        <g className="moon-extra" clipPath="url(#moon4-front)"><circle className="moon" r="3.8"><animateMotion dur="6.4s" repeatCount="indefinite" path="M1052,380 A52,17 0 1 1 948,380 A52,17 0 1 1 1052,380" /></circle></g>
+        <g className="moon-extra" clipPath="url(#moon5-front)"><circle className="moon" r="2.4" style={{ opacity: 0.55 }}><animateMotion dur="13s" repeatCount="indefinite" path="M1070,380 A70,26 0 1 1 930,380 A70,26 0 1 1 1070,380" /></circle></g>
 
         {/* sonda viajera: recorre la curva que enlaza las 3 etapas */}
         <g className="probe">
