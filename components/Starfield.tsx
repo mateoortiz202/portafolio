@@ -47,33 +47,84 @@ function makeGalaxyDust(): DustPoint[] {
 
 const GALAXY_DUST = makeGalaxyDust();
 
-function drawGalaxy(ctx: CanvasRenderingContext2D, cx: number, cy: number, radius: number) {
-  if (radius < 1) return;
+// drawGalaxy/drawSectionGlow corrían en cada frame del RAF loop y cada una
+// creaba un CanvasGradient desde cero (y la galaxia además redibujaba ~180
+// puntos de polvo uno por uno) — de sobra para generar jank en GPUs móviles
+// más limitadas, incluso sin ningún error visible. Ambas se renderizan una
+// sola vez a un sprite en caché (offscreen canvas) y de ahí en adelante cada
+// frame solo hace un drawImage escalado/atenuado con globalAlpha, mucho más
+// barato que recrear gradientes y trazar decenas de arcos por frame.
+const GALAXY_SPRITE_SIZE = 1000;
+const GALAXY_SPRITE_REF_R = GALAXY_SPRITE_SIZE / 2 / 1.15;
+let galaxySprite: HTMLCanvasElement | null = null;
+
+function getGalaxySprite(): HTMLCanvasElement {
+  if (galaxySprite) return galaxySprite;
   const colorRgb = GALAXY_CONFIG.colorRgb;
+  const sprite = document.createElement("canvas");
+  sprite.width = GALAXY_SPRITE_SIZE;
+  sprite.height = GALAXY_SPRITE_SIZE;
+  const sctx = sprite.getContext("2d")!;
+  const cx = GALAXY_SPRITE_SIZE / 2;
+  const cy = GALAXY_SPRITE_SIZE / 2;
+  const r = GALAXY_SPRITE_REF_R;
 
-  ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-
-  const haloGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 1.15);
+  sctx.globalCompositeOperation = "lighter";
+  const haloGrad = sctx.createRadialGradient(cx, cy, 0, cx, cy, r * 1.15);
   haloGrad.addColorStop(0, `rgba(${colorRgb}, 0.16)`);
   haloGrad.addColorStop(0.5, `rgba(${colorRgb}, 0.06)`);
   haloGrad.addColorStop(1, `rgba(${colorRgb}, 0)`);
-  ctx.beginPath();
-  ctx.fillStyle = haloGrad;
-  ctx.arc(cx, cy, radius * 1.15, 0, Math.PI * 2);
-  ctx.fill();
+  sctx.beginPath();
+  sctx.fillStyle = haloGrad;
+  sctx.arc(cx, cy, r * 1.15, 0, Math.PI * 2);
+  sctx.fill();
 
   for (const p of GALAXY_DUST) {
-    const size = Math.max(0.4, p.size * radius);
+    const size = Math.max(0.4, p.size * r);
     const warm = p.size > 0.011;
     const tint = warm ? "255,225,190" : colorRgb;
-    ctx.beginPath();
-    ctx.fillStyle = `rgba(${tint}, ${p.alpha})`;
-    ctx.arc(cx + p.x * radius, cy + p.y * radius, size, 0, Math.PI * 2);
-    ctx.fill();
+    sctx.beginPath();
+    sctx.fillStyle = `rgba(${tint}, ${p.alpha})`;
+    sctx.arc(cx + p.x * r, cy + p.y * r, size, 0, Math.PI * 2);
+    sctx.fill();
   }
 
+  galaxySprite = sprite;
+  return sprite;
+}
+
+function drawGalaxy(ctx: CanvasRenderingContext2D, cx: number, cy: number, radius: number) {
+  if (radius < 1) return;
+  const sprite = getGalaxySprite();
+  const destSize = GALAXY_SPRITE_SIZE * (radius / GALAXY_SPRITE_REF_R);
+
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.drawImage(sprite, cx - destSize / 2, cy - destSize / 2, destSize, destSize);
   ctx.restore();
+}
+
+const GLOW_SPRITE_SIZE = 800;
+const glowSpriteCache = new Map<string, HTMLCanvasElement>();
+
+function getGlowSprite(colorRgb: string): HTMLCanvasElement {
+  const cached = glowSpriteCache.get(colorRgb);
+  if (cached) return cached;
+  const sprite = document.createElement("canvas");
+  sprite.width = GLOW_SPRITE_SIZE;
+  sprite.height = GLOW_SPRITE_SIZE;
+  const sctx = sprite.getContext("2d")!;
+  const r = GLOW_SPRITE_SIZE / 2;
+  const grad = sctx.createRadialGradient(r, r, 0, r, r, r);
+  grad.addColorStop(0, `rgba(${colorRgb}, 1)`);
+  grad.addColorStop(0.6, `rgba(${colorRgb}, 0.35)`);
+  grad.addColorStop(1, `rgba(${colorRgb}, 0)`);
+  sctx.beginPath();
+  sctx.fillStyle = grad;
+  sctx.arc(r, r, r, 0, Math.PI * 2);
+  sctx.fill();
+  glowSpriteCache.set(colorRgb, sprite);
+  return sprite;
 }
 
 function drawSectionGlow(
@@ -89,17 +140,13 @@ function drawSectionGlow(
   const gx = side === "right" ? cx + W * 0.28 : cx - W * 0.28;
   const radius = Math.min(W, H) * 0.62;
   const alpha = proximity * 0.32;
+  if (alpha <= 0.002) return;
 
+  const sprite = getGlowSprite(colorRgb);
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
-  const grad = ctx.createRadialGradient(gx, cy, 0, gx, cy, radius);
-  grad.addColorStop(0, `rgba(${colorRgb}, ${alpha})`);
-  grad.addColorStop(0.6, `rgba(${colorRgb}, ${alpha * 0.35})`);
-  grad.addColorStop(1, `rgba(${colorRgb}, 0)`);
-  ctx.beginPath();
-  ctx.fillStyle = grad;
-  ctx.arc(gx, cy, radius, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(sprite, gx - radius, cy - radius, radius * 2, radius * 2);
   ctx.restore();
 }
 
